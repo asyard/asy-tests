@@ -19,6 +19,7 @@
         <module>asy-test-streams</module>
         <module>asy-test-zemberek</module>
         <module>asy-test-benchmark</module>
+        <module>asy-test-strutswebapp</module>
     </modules>
 
 
