@@ -6,6 +6,8 @@
 
 <struts-config>
 
+
+
     <form-beans>
         <form-bean name="loginForm" type="com.asy.test.struts1.forms.LoginForm"/>
     </form-beans>
@@ -24,7 +26,7 @@
         </action>
 
         <action path="/welcome" parameter="welcome" type="com.asy.test.struts1.actions.LoginAction">
-            <forward name="success" path="/index.jsp" />
+            <forward name="success" path="/welcome.jsp" />
         </action>
 
 
