@@ -26,7 +26,7 @@
                        codeLength="5" codeStyle="ALPHA" reloadTooltip="Refresh Image" soundTooltip="Listen Code"
     />
     <div class="validationDiv">
-        Code : <html:text property="captchaCode" maxlength="20"/> <br/>
+        Code : <html:text property="captchaCode" styleId="captchaCode" maxlength="20"/> <br/>
         <input type="submit" name="submit" value="Submit"/>
     </div>
 </html:form>
