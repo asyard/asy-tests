@@ -9,17 +9,29 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>10</source>
+                    <target>10</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 
     <modules>
-        <module>asy-test-jlink</module>
         <module>asy-test-hawk</module>
         <module>asy-test-mocksms</module>
-        <module>asy-test-double</module>
         <module>asy-test-streams</module>
         <module>asy-test-zemberek</module>
         <module>asy-test-benchmark</module>
         <module>asy-test-strutswebapp</module>
+        <module>asy-test-httpurlconnection</module>
+        <module>asy-test-reflect</module>
     </modules>
 
 

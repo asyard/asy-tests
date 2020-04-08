@@ -9,16 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>asy-test-hawk</artifactId>
-
-
-    <dependencies>
-        <dependency>
-            <groupId>com.wealdtech.hawk</groupId>
-            <artifactId>hawk-core</artifactId>
-            <version>1.2.3</version>
-        </dependency>
-    </dependencies>
+    <artifactId>asy-test-streams</artifactId>
 
 
 
