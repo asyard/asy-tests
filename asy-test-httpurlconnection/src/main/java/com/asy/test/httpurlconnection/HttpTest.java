@@ -7,7 +7,12 @@ import java.net.URLConnection;
 
 public class HttpTest {
     public static void main(String[] args) throws Exception {
-        URL url = new URL("https://www.google.com");
+
+        String connectionUrl = "https://www.google.com";
+        if (args != null && args.length > 0 && !args[0].isEmpty()) {
+            connectionUrl = args[0];
+        }
+        URL url = new URL(connectionUrl);
         URLConnection connection = url.openConnection();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine, inputLines = "";
