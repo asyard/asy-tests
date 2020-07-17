@@ -1,6 +1,8 @@
 package com.asy.test;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -21,6 +23,23 @@ public class TestReflect {
 
         System.out.println("10.2.3.4".matches("10.2.*.*"));
         System.out.println("1231s244".matches("[0-9]+"));
+
+        System.out.println("-----");
+        System.out.println(TargetClass.isStaticfinalboolean());
+        setFinalStatic(Boolean.class.getField("FALSE"), true);
+        System.out.println(TargetClass.isStaticfinalboolean());
+
+    }
+
+    static void setFinalStatic(Field field, Object newValue) throws Exception {
+        field.setAccessible(true);
+
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+        field.set(null, newValue);
+        System.out.println(field);
     }
 
     public static void printMethods(Method[] methods) {

@@ -24,14 +24,15 @@
 
 
     <modules>
-        <module>asy-test-hawk</module>
-        <module>asy-test-mocksms</module>
-        <module>asy-test-streams</module>
-        <module>asy-test-zemberek</module>
         <module>asy-test-benchmark</module>
-        <module>asy-test-strutswebapp</module>
+        <module>asy-test-concurrency</module>
+        <module>asy-test-hawk</module>
         <module>asy-test-httpurlconnection</module>
+        <module>asy-test-java8tolatest</module>
+        <module>asy-test-mocksms</module>
         <module>asy-test-reflect</module>
+        <module>asy-test-strutswebapp</module>
+        <module>asy-test-zemberek</module>
     </modules>
 
 

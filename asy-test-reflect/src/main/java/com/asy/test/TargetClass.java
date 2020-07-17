@@ -1,6 +1,18 @@
 package com.asy.test;
 
 public class TargetClass {
+
+    private static final int staticfinalint = 5;
+    private static final boolean staticfinalboolean = false;
+
+    public static boolean isStaticfinalboolean() {
+        return staticfinalboolean;
+    }
+
+    public static int getStaticfinalint() {
+        return staticfinalint;
+    }
+
     private int a;
     private String aStr;
 
