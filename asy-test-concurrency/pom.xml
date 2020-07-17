@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>asy-test-streams</artifactId>
 
+    <artifactId>asy-test-concurrency</artifactId>
 
 
 </project>
