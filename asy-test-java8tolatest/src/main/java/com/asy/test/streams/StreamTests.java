@@ -1,6 +1,8 @@
 package com.asy.test.streams;
 
+import com.asy.test.data.Generator;
 import com.asy.test.data.IdValuePair;
+import com.asy.test.data.Person;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,9 +25,121 @@ public class StreamTests {
     public static void main(String[] args) {
         //testFindInList();
         //testFindInList2();
+        testFindInList3();
+        //test_map_compare();
+        //test_flatmap();
         //testTakeWhile();
         //testDropWhile();
-        testIntStream();
+        //testIntStream();
+        //testReduce();
+    }
+
+    private static void test_flatmap() {
+        // regular map
+        List<String> myList = Stream.of("a", "b")
+                .map(String::toUpperCase)
+                .collect(Collectors.toList());
+
+        // if we have list in the list like :
+        List<List<String>> list = Arrays.asList(
+                Arrays.asList("a", "f", "e", "b"),
+                Arrays.asList("b", "c", "a"));
+
+        System.out.println(list);
+
+        // gives error :
+        //list.stream().map(String::toString).collect(Collectors.toList());
+
+        // this is ok :
+        List<String> collected = list.stream().flatMap(List::stream).collect(Collectors.toList());
+        System.out.println(collected);
+
+        // distinct and also sorted :
+        List<String> collected_distinct = list.stream().flatMap(List::stream).distinct().sorted().collect(Collectors.toList());
+        System.out.println(collected_distinct);
+
+    }
+
+    private static void test_map_compare() {
+        List<Person> personList = Generator.generatePersonList();
+
+        //personList.forEach(s -> System.out.print(s.getName() + " " + s.getSurname()));
+        //personList.forEach(s -> {System.out.print(s.getName() + " " + s.getSurname()); });
+        //System.out.println("");
+
+        //String streamcollect = personList.stream().map(s -> s.getName() + " " + s.getSurname()).collect(Collectors.joining(","));
+        //System.out.print(streamcollect);
+        //System.out.println();
+
+
+        StringJoiner joiner = new StringJoiner(",");
+        personList.forEach(p -> joiner.add(p.getName() + " " + p.getSurname()));
+        System.out.println(joiner.toString()); // inside : String.join(",", .. );
+
+        Comparator<Person> personSurnameReverseComparator
+                = Comparator.comparing(
+                Person::getSurname, (s1, s2) -> {
+                    return s2.compareTo(s1);
+                });
+
+        List<String> collectedList = personList.stream()
+                .sorted(/*Comparator.reverseOrder()*/ personSurnameReverseComparator)
+                .map(p -> p.getName()+"("+p.getSurname()+")")
+                .collect(Collectors.toList());
+        System.out.println("sorted by surname desc : "+collectedList);
+
+        collectedList = personList.stream()
+                .sorted(personSurnameReverseComparator.reversed())
+                .map(p -> p.getName()+"("+p.getSurname()+")")
+                .collect(Collectors.toList());
+        System.out.println("sorted by surname asc : "+collectedList);
+
+
+        //Comparator<String> stringLowercaseComparator = Comparator.comparing(String::toLowerCase);
+
+        Locale tr = new Locale("tr");
+        Comparator<String> stringLowercaseComparatorUsingLocale = Comparator.comparing(s -> s.toLowerCase(tr));
+        List<String> collectedList2 = personList.stream()
+                .map(p -> p.getName()+"("+p.getSurname()+")")
+                .sorted(stringLowercaseComparatorUsingLocale)
+                .collect(Collectors.toList());
+        System.out.println("sorted by name : "+collectedList2);
+
+
+        List<String> filteredNames = personList.stream()
+                .filter(p -> p.getGender().equals(Person.Gender.FEMALE))
+                .map(Person::getName)
+                .map(String::toUpperCase)
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
+
+        System.out.println("female names, uppercase and ordered : "+filteredNames);
+
+    }
+
+    private static void testFindInList3() {
+        List<Person> personList = Generator.generatePersonList();
+
+        Map<String, Boolean> nameAndVipStatusMapAccordingtoMagicNumber = personList.stream()
+                .filter(p -> p.getMagicNumber() > 23 && p.getMagicNumber() < 250)
+                .collect(Collectors.toMap(Person::getName, Person::isVip));
+
+        System.out.println(nameAndVipStatusMapAccordingtoMagicNumber);
+
+    }
+
+    private static void testReduce() {
+        List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5);
+        Integer reduced = integers.stream().reduce(0, (a, b) -> a + b);
+        System.out.println(reduced);
+
+        Integer collected = integers.stream().collect(Collectors.summingInt(Integer::intValue));
+        System.out.println(collected);
+
+        IntStream intStream = integers.stream().mapToInt(Integer::intValue);
+        System.out.println(intStream.sum());
+
+
     }
 
     private static void testIntStream() {
@@ -63,14 +177,14 @@ public class StreamTests {
     }
 
     private static void testFindInList2() {
-        var explicitPersonList = List.of(new IdValuePair("123", "Deneme"), new IdValuePair("234", "Anime"));
-        explicitPersonList.stream().filter(e -> e.getValue().contains("e")).forEach(e -> System.out.println(e.getId()));
+        var idValuePairList = List.of(new IdValuePair("123", "Deneme"), new IdValuePair("234", "Anime"));
+        idValuePairList.stream().filter(e -> e.getValue().contains("e")).forEach(e -> System.out.println(e.getId()));
 
-        var refinedList = explicitPersonList.stream().filter(e -> e.getValue().contains("e")).map(x -> x.getId()).collect(Collectors.toList());
+        var refinedList = idValuePairList.stream().filter(e -> e.getValue().contains("e")).map(x -> x.getId()).collect(Collectors.toList());
         //System.out.println(refinedList);
         refinedList.stream().forEach(System.out::println);
 
-        var refinedListStr = explicitPersonList.stream().filter(e -> e.getValue().contains("e")).map(x -> x.getId()).collect(Collectors.joining(","));
+        var refinedListStr = idValuePairList.stream().filter(e -> e.getValue().contains("e")).map(x -> x.getId()).collect(Collectors.joining(","));
         System.out.println(refinedListStr);
 
     }
@@ -85,7 +199,36 @@ public class StreamTests {
         testSet.add(new IdValuePair("8", "asd6"));
         testSet.add(new IdValuePair("3", "asd7"));
         testSet.add(new IdValuePair("6", "asd8"));
+        System.out.println("Total item count : " + testSet.stream().count());
         boolean claimIdExists = testSet.stream().anyMatch(item -> "13".equals(item.getId()));
-        System.out.println(claimIdExists);
+        System.out.println("anyMatch:"+claimIdExists);
+
+
+        System.out.println("allMatch (each value starts with asd?):" + testSet.stream().allMatch(item -> item.getValue().startsWith("asd")));
+        System.out.println("allMatch (each id length is 1?):"+testSet.stream().allMatch(item -> item.getId().length()==1));
+        System.out.println("noneMatch (id=10):"+testSet.stream().noneMatch(item -> "10".equals(item.getId())));
+        System.out.println("--eof1--");
+
+
+
+
+
+        // peek : This method exists mainly to support debugging, where you want to see the elements as they flow past a certain point in a pipeline
+        // Alternatively, we could have used map(), but peek() is more convenient since we don't want to replace the element.
+        testSet.stream().peek(System.out::println).collect(Collectors.toList());
+        System.out.println("--eof2--");
+
+        //intermediate vs. Terminal Operations
+        testSet.stream().peek(System.out::println); // All intermediate operations are lazy, and, as a result, no operations will have any effect until the pipeline starts to work.
+        System.out.println("--eof3 (nothing printed)--");
+
+        // Terminal operations mean the end of the stream lifecycle. Most importantly for our scenario, they initiate the work in the pipeline.
+        testSet.stream().peek(System.out::println).collect(Collectors.toList());
+        System.out.println("--eof4--");
+
+
+        //Stream streamTest = testSet.stream();
+        //streamTest.forEach(System.out::println);
+        //streamTest.forEach(System.out::println); // a stream can be operated only once : stream has already been operated upon or closed
     }
 }
