@@ -25,13 +25,18 @@ public class StreamTests {
     public static void main(String[] args) {
         //testFindInList();
         //testFindInList2();
-        testFindInList3();
+        //testFindInList3();
         //test_map_compare();
         //test_flatmap();
         //testTakeWhile();
         //testDropWhile();
         //testIntStream();
         //testReduce();
+        testMapFilterReduce();
+    }
+
+    private static void testMapFilterReduce() {
+        
     }
 
     private static void test_flatmap() {
@@ -130,15 +135,27 @@ public class StreamTests {
 
     private static void testReduce() {
         List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5);
-        Integer reduced = integers.stream().reduce(0, (a, b) -> a + b);
+
+        // reduce  : applies a binary operator to each element in the stream
+        Integer reduced = integers.stream().reduce(0, (a, b) -> a + b); //identity element will be used as 'b' for the first a,b pair for 'a'.
         System.out.println(reduced);
 
+        Optional optionalReducedResultWithoutIdentityParameter = integers.stream().reduce((a, b) -> a + b);
+        System.out.println(optionalReducedResultWithoutIdentityParameter);
+
+        // collect : a "collection" is created and each element is "added" to that collection.
         Integer collected = integers.stream().collect(Collectors.summingInt(Integer::intValue));
         System.out.println(collected);
 
         IntStream intStream = integers.stream().mapToInt(Integer::intValue);
         System.out.println(intStream.sum());
 
+
+        List<Person> personList = Generator.generatePersonList();
+        Optional<Person> personWithHighestMagicNumberAsOptional = personList.stream().reduce((p,q) -> {
+           if(p.getMagicNumber() > q.getMagicNumber()) return p; else return q;
+        });
+        System.out.println(personWithHighestMagicNumberAsOptional);
 
     }
 

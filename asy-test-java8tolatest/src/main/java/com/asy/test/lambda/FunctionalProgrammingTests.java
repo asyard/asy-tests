@@ -175,6 +175,7 @@ public class FunctionalProgrammingTests {
         String[] strList = {"str1", "str 2", "str  3"};
         Arrays.asList(strList).forEach(nameAndLengthPrinterConsumer);
         Arrays.asList(strList).forEach(System.out::println);
+        Arrays.asList(strList).forEach(s ->System.out.println(s));
 
         // consumer has andThen default method
         List<IdValuePair> sampleData = Generator.generateIdValueList(5);

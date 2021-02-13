@@ -33,6 +33,7 @@
         <module>asy-test-reflect</module>
         <module>asy-test-strutswebapp</module>
         <module>asy-test-zemberek</module>
+        <module>asy-test-rx</module>
     </modules>
 
 
