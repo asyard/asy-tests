@@ -4,6 +4,8 @@ import com.asy.test.data.Generator;
 import com.asy.test.data.IdValuePair;
 import com.asy.test.data.Person;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -23,7 +25,31 @@ public class FunctionalProgrammingTests {
         // notes:
         // unary, bi int-long-double consumer/predicate/function types -> see which one extends from other todo
 
+        //Supplier.java : represents a function which does not take in any argument but produces a value of type T
+        supplierTests();
 
+    }
+
+    private static void supplierTests() {
+        Supplier<Double> doubleSupplier = () -> Math.random();
+        System.out.println(doubleSupplier.get());
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        Supplier<String> dateTimeSup = () -> dtf.format(LocalDateTime.now());
+        System.out.println(dateTimeSup.get());
+
+        List<String> strList = supplier().get();
+        strList.add("str");
+        System.out.println(strList);
+
+        List<Integer> integerList = supplier().get();
+        integerList.add(1);
+        System.out.println(integerList);
+    }
+
+
+    private static <T> Supplier<List> supplier() {
+        return () -> new ArrayList<T>();
     }
 
     private static void functionTests() {
