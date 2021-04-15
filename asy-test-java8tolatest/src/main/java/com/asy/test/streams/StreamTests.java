@@ -7,6 +7,7 @@ import com.asy.test.data.Person;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 public class StreamTests {
@@ -25,18 +26,49 @@ public class StreamTests {
     public static void main(String[] args) {
         //testFindInList();
         //testFindInList2();
-        //testFindInList3();
+        testFindInList3();
         //test_map_compare();
         //test_flatmap();
         //testTakeWhile();
         //testDropWhile();
         //testIntStream();
         //testReduce();
-        testMapFilterReduce();
+        //testMapFilterReduce();
     }
 
     private static void testMapFilterReduce() {
-        
+        List<Person> personList = Generator.generatePersonList();
+        long result = personList.stream()
+                .filter(Person::isVip)
+                .map(Person::getMagicNumber)
+                .reduce(0L, (p,q) -> (p+q));
+
+        long result2 = personList.stream()
+                .filter(Person::isVip)
+                .map(Person::getMagicNumber)
+                .reduce(0L, Long::sum);
+
+        Optional resultOpt = personList.stream()
+                .filter(Person::isVip)
+                .map(Person::getMagicNumber)
+                .reduce(Long::sum);
+
+
+        LongStream result3 = personList.stream()
+                .filter(Person::isVip)
+                .map(Person::getMagicNumber)
+                .mapToLong(Long::longValue);
+
+        System.out.println(result);
+        System.out.println(result2);
+        System.out.println(result3.sum());
+        System.out.println(resultOpt.get());
+
+        List<String> list = Arrays.asList("25", "225", "1000", "20", "15");
+        long result4 = list.stream().mapToLong(num -> Long.parseLong(num)).sum();
+        System.out.println(result4);
+
+
     }
 
     private static void test_flatmap() {
@@ -130,6 +162,11 @@ public class StreamTests {
                 .collect(Collectors.toMap(Person::getName, Person::isVip));
 
         System.out.println(nameAndVipStatusMapAccordingtoMagicNumber);
+
+
+        Optional<Person> anyPerson = personList.stream().filter(p -> p.getMagicNumber() > 23).findAny();
+        System.out.println(anyPerson.orElse(personList.get(0)));
+
 
     }
 

@@ -14,7 +14,7 @@ public class FunctionalProgrammingTests {
 
     public static void main(String[] args) {
         //Consumer.java : Takes 1 argument. Does not return any value
-        //consumerTests();
+        consumerTests();
 
         //Predicate.java : Takes 1 argument. Returns true/false
         //predicateTests();
@@ -26,31 +26,11 @@ public class FunctionalProgrammingTests {
         // unary, bi int-long-double consumer/predicate/function types -> see which one extends from other todo
 
         //Supplier.java : represents a function which does not take in any argument but produces a value of type T
-        supplierTests();
+        //supplierTests();
 
     }
 
-    private static void supplierTests() {
-        Supplier<Double> doubleSupplier = () -> Math.random();
-        System.out.println(doubleSupplier.get());
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        Supplier<String> dateTimeSup = () -> dtf.format(LocalDateTime.now());
-        System.out.println(dateTimeSup.get());
-
-        List<String> strList = supplier().get();
-        strList.add("str");
-        System.out.println(strList);
-
-        List<Integer> integerList = supplier().get();
-        integerList.add(1);
-        System.out.println(integerList);
-    }
-
-
-    private static <T> Supplier<List> supplier() {
-        return () -> new ArrayList<T>();
-    }
 
     private static void functionTests() {
         Function<Double, String> doublePrinterFunction = f -> "Value is : " + f;
@@ -231,6 +211,13 @@ public class FunctionalProgrammingTests {
         });
 
         System.out.println();
+
+        //Consumer consumer3 = (String s) -> System.out.println(s); Incompatible parameter types in lambda expression: expected Object but found String
+        //Consumer<String> consumer3 = String s -> System.out.println(s); ';' expected
+        Consumer<String> consumer3 = (String s) -> System.out.println(s);
+        Consumer<String> consumer4 = (final String s) -> System.out.println(s);
+
+        System.out.println();
         //
         IntConsumer intConsumer = ic -> System.out.println(ic + 1);
         int val = 3;
@@ -268,14 +255,35 @@ public class FunctionalProgrammingTests {
 
 
 
-        //supplier is the opposite of consumer. Does not take any arg and returns sth
+        //supplier is the opposite of consumer. Does not take any arg and returns sth.
+        //@see supplierTests()
 
         Supplier<Integer> randomNumberSupplier = () -> {return new Random().nextInt(100);};
         System.out.println(randomNumberSupplier.get());
 
-
-
-
-
     }
+
+    private static void supplierTests() {
+        Supplier<Double> doubleSupplier = () -> Math.random();
+        System.out.println(doubleSupplier.get());
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        Supplier<String> dateTimeSup = () -> dtf.format(LocalDateTime.now());
+        System.out.println(dateTimeSup.get());
+
+        List<String> strList = supplier().get();
+        strList.add("str");
+        System.out.println(strList);
+
+        List<Integer> integerList = supplier().get();
+        integerList.add(1);
+        System.out.println(integerList);
+    }
+
+
+    private static <T> Supplier<List> supplier() {
+        return () -> new ArrayList<T>();
+    }
+
+
 }
