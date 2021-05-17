@@ -5,10 +5,8 @@ import com.asy.test.data.IdValuePair;
 import com.asy.test.data.Person;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.*;
 
 public class StreamTests {
 
@@ -26,14 +24,74 @@ public class StreamTests {
     public static void main(String[] args) {
         //testFindInList();
         //testFindInList2();
-        testFindInList3();
+        //testFindInList3();
         //test_map_compare();
         //test_flatmap();
         //testTakeWhile();
         //testDropWhile();
-        //testIntStream();
+        testIntStream();
         //testReduce();
         //testMapFilterReduce();
+        //testOps();
+
+    }
+
+    private static void testOps() {
+        List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5);
+        Optional<Integer> max1 = integers.stream().max(Integer::compareTo);
+        System.out.println(max1.get());
+
+        Optional<Integer> integerReduced = integers.stream().reduce((a, b) -> a >= b ? a : b);
+        System.out.println(integerReduced.get());
+
+        Optional<Integer> reduce2 = integers.stream().reduce(Integer::max);
+        System.out.println(reduce2.get());
+
+
+        OptionalInt max2 = IntStream.of(1, 2, 3, 4, 5).max();
+        System.out.println(max2.getAsInt());
+
+
+
+        Integer sum1 = integers.stream().reduce((a, b) -> a + b).get();
+        System.out.println(sum1);
+
+        Integer sum2 = integers.stream().reduce(Integer::sum).get();
+        System.out.println(sum2);
+
+        int sum3 = IntStream.of(1, 2, 3, 4, 5).sum();
+        System.out.println(sum3);
+
+        int sum4 = integers.stream().mapToInt(Integer::intValue).sum();
+        System.out.println(sum4);
+
+        Integer sum5 = integers.stream().collect(Collectors.summingInt(Integer::intValue));
+        System.out.println(sum5);
+
+
+        List<Integer> testintlist = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        Stream<Integer> limitliststream = testintlist.stream().limit(7);
+        limitliststream.forEach(System.out::print);
+        System.out.println();
+
+        Stream<Integer> skippedliststream = testintlist.stream().skip(3);
+        skippedliststream.forEach(System.out::print);
+        System.out.println();
+
+        Stream<Integer> limitedStream = Stream.iterate(0, x -> x + 2).limit(10); // 10 elems, even stream
+        limitedStream.forEach(System.out::print);
+        System.out.println();
+
+        // infinite
+        // Stream<Integer> unlimitedStream = Stream.iterate(0, x -> x + 2);
+        // unlimitedStream.forEach(System.out::println);
+
+
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        Stream<Integer> randomGeneratedStream = Stream.generate(() -> random.nextInt(5)).limit(10);
+        randomGeneratedStream.forEach(System.out::print);
+        System.out.println();
+
     }
 
     private static void testMapFilterReduce() {
@@ -167,6 +225,8 @@ public class StreamTests {
         Optional<Person> anyPerson = personList.stream().filter(p -> p.getMagicNumber() > 23).findAny();
         System.out.println(anyPerson.orElse(personList.get(0)));
 
+        Optional<Person> firstPerson = personList.stream().filter(p -> p.getMagicNumber() > 23).findFirst();
+        System.out.println(firstPerson.orElse(personList.get(0)));
 
     }
 
@@ -200,6 +260,28 @@ public class StreamTests {
         System.out.println(testVariable);
 
         IntStream.iterate(3, x -> x < 10, x -> x + 3).forEach(r -> System.out.print(r + " "));
+        System.out.println();
+
+        IntStream.range(1, 5).forEach(System.out::print);
+        System.out.println();
+
+        IntStream.rangeClosed(1, 5).forEach(System.out::print); // 5 is included
+        System.out.println();
+
+
+        // boxed
+        IntStream.rangeClosed(1, 5).forEach((int x)-> System.out.print(x)); // primitive int
+        System.out.println();
+        IntStream.rangeClosed(1, 5).mapToObj(Integer::valueOf).forEach((Integer x) -> System.out.print(x)); // mapping to Integer
+        System.out.println();
+        IntStream.rangeClosed(1, 5).boxed().forEach((Integer x) -> System.out.print(x)); // boxing to Integer
+        System.out.println();
+        //IntStream.rangeClosed(1, 5).boxed().sum(); // compile error
+        IntStream.rangeClosed(1, 5).boxed().mapToInt(Integer::valueOf).sum(); // unboxing to primitive int
+
+
+        IntStream.range(0, 20).boxed().collect(Collectors.toList()).forEach(System.out::print);
+        System.out.println();
 
         IntStream.range(0, 20).boxed().collect(Collectors.toList()).forEach(System.out::print);
         System.out.println();
@@ -207,9 +289,25 @@ public class StreamTests {
         String intStr = IntStream.rangeClosed(0, 20).boxed().map(p -> p.toString()).collect(Collectors.joining(","));
         System.out.println(intStr);
 
-        System.out.println("sum of 1-to-10 :"+IntStream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).sum());
+        System.out.println("sum of 1-to-10 :" + IntStream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).sum());
         IntSummaryStatistics stats = IntStream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).summaryStatistics();
         System.out.println(stats);
+
+        System.out.println(IntStream.of(1,2,3,4,5).min().getAsInt());
+        System.out.println(IntStream.of(1,2,3,4,5).max().getAsInt());
+        System.out.println(IntStream.of(1,2,3,4,5).sum());
+        System.out.println(IntStream.of(1,2,3,4,5).average().getAsDouble());
+
+
+
+
+        // bonus
+        DoubleStream doubleStream = LongStream.of(2, 3, 4, 5).asDoubleStream();
+        doubleStream.forEach(System.out::print);
+
+
+
+
 
 
 
@@ -272,7 +370,8 @@ public class StreamTests {
         testSet.stream().peek(System.out::println).collect(Collectors.toList());
         System.out.println("--eof2--");
 
-        //intermediate vs. Terminal Operations
+        // intermediate vs. Terminal Operations
+        // filter, peek, map, flatmap etc : intermediate
         testSet.stream().peek(System.out::println); // All intermediate operations are lazy, and, as a result, no operations will have any effect until the pipeline starts to work.
         System.out.println("--eof3 (nothing printed)--");
 
