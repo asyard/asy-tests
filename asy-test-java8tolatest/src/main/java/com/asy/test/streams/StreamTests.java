@@ -29,10 +29,93 @@ public class StreamTests {
         //test_flatmap();
         //testTakeWhile();
         //testDropWhile();
-        testIntStream();
+        //testIntStream();
         //testReduce();
         //testMapFilterReduce();
         //testOps();
+        testCollectionOps();
+    }
+
+    private static void testCollectionOps() {
+
+        //joining
+        List<String> strList = Arrays.asList("A", "B", "C", "D", "E");
+        String collected1 = strList.stream().collect(Collectors.joining(","));
+        System.out.println(collected1);
+
+        String collected2 = Stream.of("A", "B", "C", "D", "E").collect(Collectors.joining(","));
+        System.out.println(collected2);
+
+        String collected3 = String.join(",", strList);
+        System.out.println(collected3);
+
+        StringJoiner joiner = new StringJoiner(",");
+        strList.forEach(p -> joiner.add(p));
+        System.out.println(joiner.toString()); // inside : String.join(",", .. );
+
+        String collected5 = Stream.of("A", "B", "C", "D", "E").collect(Collectors.joining(",", "[", "]"));
+        System.out.println(collected5);
+
+        //counting : counts the number of elements in a stream
+        Long count1 = Stream.of("AA", "B", "C", "D", "E").collect(Collectors.counting());
+        System.out.println(count1);
+
+        Long count2 = Stream.of("AA", "B", "C", "D", "E").count();
+        System.out.println(count2);
+
+        Map<Integer, Long> countmap3 = Stream.of("AA", "B", "C", "D", "E").collect(Collectors.groupingBy(String::length, Collectors.counting()));
+        System.out.println(countmap3);
+
+        //mapping
+        List<Person> personList = Generator.generatePersonList();
+
+        List<String> collectedList4 = personList.stream()
+                .map(p -> p.getName() + "(" + p.getSurname() + ")")
+                .collect(Collectors.toList());
+        System.out.println(collectedList4);
+
+        List<String> collectedList5 = personList.stream()
+                .collect(Collectors.mapping(p -> p.getName() + "(" + p.getSurname() + ")", Collectors.toList()));
+        System.out.println(collectedList5);
+
+        Map<Boolean, List<String>> collectedList6 = personList.stream()
+                .collect(Collectors.groupingBy(Person::isVip, Collectors.mapping(p -> p.getName() + "(" + p.getSurname() + ")", Collectors.toList())));
+        System.out.println(collectedList6);
+
+        //minBy, min
+        Optional<String> minval = Stream.of("C", "B", "A", "G", "D").collect(Collectors.minBy((a, b) -> a.compareTo(b)));
+        System.out.println(minval.get());
+
+        Optional<String> minval2 = Stream.of("C", "B", "A", "G", "D").min(Comparator.naturalOrder());
+        System.out.println(minval2.get());
+
+        //maxBy, max
+        Optional<String> maxval = Stream.of("C", "B", "A", "G", "D").collect(Collectors.maxBy((a, b) -> a.compareTo(b)));
+        System.out.println(maxval.get());
+
+        Optional<String> maxval2 = Stream.of("C", "B", "A", "G", "D").max(Comparator.naturalOrder());
+        System.out.println(maxval2.get());
+
+        Optional<Person> maxBy3 = personList.stream().collect(Collectors.maxBy(Comparator.comparing(Person::getMagicNumber)));
+        System.out.println(maxBy3.get());
+
+        Optional<Person> maxBy4 = personList.stream().max(Comparator.comparing(Person::getMagicNumber));
+        System.out.println(maxBy4.get());
+
+        //summing
+        Integer collectedSum = personList.stream().collect(Collectors.summingInt(m -> m.getMagicNumber().intValue()));
+        System.out.println(collectedSum);
+
+        //averaging
+        Double collectedAvg = personList.stream().collect(Collectors.averagingInt(m -> m.getMagicNumber().intValue()));
+        System.out.println(collectedAvg);
+
+        //grouping
+
+
+        //partitioning
+
+
 
     }
 
@@ -166,10 +249,6 @@ public class StreamTests {
         //System.out.print(streamcollect);
         //System.out.println();
 
-
-        StringJoiner joiner = new StringJoiner(",");
-        personList.forEach(p -> joiner.add(p.getName() + " " + p.getSurname()));
-        System.out.println(joiner.toString()); // inside : String.join(",", .. );
 
         Comparator<Person> personSurnameReverseComparator
                 = Comparator.comparing(
