@@ -1,10 +1,14 @@
-package com.asy.test.streams;
+package com.asy.test;
 
 import com.asy.test.data.Generator;
 import com.asy.test.data.IdValuePair;
 import com.asy.test.data.Person;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.*;
 
@@ -33,11 +37,58 @@ public class StreamTests {
         //testReduce();
         //testMapFilterReduce();
         //testOps();
-        testCollectionOps();
+        //testCollectionOps();
+        testParallelStream();
+    }
+
+    private static void testParallelStream() {
+        System.out.println("Available processors : " + Runtime.getRuntime().availableProcessors());
+        int parallelSum = IntStream.rangeClosed(1, 5000).parallel().sum(); // thread count = available processor count : Runtime.getRuntime().availableProcessors()
+        System.out.println(parallelSum);
+
+        List<String> strList = List.of("A", "b", "C", "D", "e");
+
+        // parallel uses : fork/join pool, which is introduced in java7
+        ForkJoinPool myPool = new ForkJoinPool(20); // increase thread count
+        try {
+            myPool.submit(() ->
+                    strList.parallelStream().forEach(s -> System.out.println("isLower:" + s.equals(s.toLowerCase())))).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        // sequential vs parallel performance
+        Instant start = Instant.now();
+        int sequentialSum2 = IntStream.rangeClosed(1, 50000).sum();
+        Instant end = Instant.now();
+        System.out.println(sequentialSum2);
+        System.out.println("sequential (ns) : " + Duration.between(start, end).getNano());
+
+
+        start = Instant.now();
+        int parallelSum2 = IntStream.rangeClosed(1, 50000).parallel().sum();
+        end = Instant.now();
+        System.out.println(parallelSum2);
+        System.out.println("parallel (ns) : " + Duration.between(start, end).getNano());
+
+
+        int[] intsArray = ThreadLocalRandom.current().ints().limit(1000).toArray();
+
+        start = Instant.now();
+        Arrays.stream(intsArray).sorted();
+        end = Instant.now();
+        System.out.println("sequential sort (ns) : " + Duration.between(start, end).getNano());
+
+        start = Instant.now();
+        Arrays.stream(intsArray).parallel().sorted();
+        end = Instant.now();
+        System.out.println("parallel sort (ns) : " + Duration.between(start, end).getNano());
+
     }
 
     private static void testCollectionOps() {
-
         //joining
         List<String> strList = Arrays.asList("A", "B", "C", "D", "E");
         String collected1 = strList.stream().collect(Collectors.joining(","));
@@ -112,9 +163,59 @@ public class StreamTests {
 
         //grouping
 
+            //grouping-classifier
+            Map<Integer, List<String>> strLengthsGrouped = Stream.of("AA", "BBB", "CCC", "DDDD", "EE", "FFF", "G").collect(Collectors.groupingBy(String::length));
+            System.out.println(strLengthsGrouped);
 
-        //partitioning
+            Map<Long, List<Person>> personMagicNumberGrouped = personList.stream().collect(Collectors.groupingBy(Person::getMagicNumber));
+            personMagicNumberGrouped.entrySet().forEach(System.out::println);
+            System.out.println(personMagicNumberGrouped);
+            //personMagicNumberGrouped.forEach((k,v) -> System.out.println("["+k+"] = " + v));
 
+            //grouping-classifier, downstream
+            List<String> namesList = personList.stream().map(Person::getName).collect(Collectors.toList());
+            System.out.println(namesList);
+            Map<Integer, List<String>> namesLengthGrouped = namesList.stream().collect(Collectors.groupingBy(String::length));
+            System.out.println(namesLengthGrouped);
+
+            Map<Integer, List<String>> namesLengthGroupedWithStrFiltering = namesList.stream().
+                    collect(Collectors.groupingBy(String::length, Collectors.filtering(s -> s.contains("e"), Collectors.toList())));
+            System.out.println(namesLengthGroupedWithStrFiltering);
+
+            System.out.println("---");
+            Map<Long, Optional<Person>> personMaxMagicNumberGrouped = personList.stream().
+                    collect(Collectors.groupingBy(Person::getMagicNumber, Collectors.maxBy(Comparator.comparing(Person::getMagicNumber))));
+                //personMaxMagicNumberGrouped.entrySet().stream().forEach(System.out::println);
+                personMaxMagicNumberGrouped.forEach((k, v) -> System.out.println(k + "-" + v));
+
+            System.out.println("---");
+            Map<Long, Person> personMaxMagicNumberGrouped2 = personList.stream().
+                    collect(Collectors.groupingBy(Person::getMagicNumber,
+                            Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Person::getMagicNumber)), Optional::get)));
+            personMaxMagicNumberGrouped2.forEach((k, v) -> System.out.println(k + "-" + v));
+
+            System.out.println("---");
+            Map<Boolean, Double> personGroupedByVipAndMagicNumberAvg3 = personList.stream().collect(Collectors.groupingBy(Person::isVip, Collectors.averagingLong(Person::getMagicNumber)));
+            System.out.println(personGroupedByVipAndMagicNumberAvg3);
+
+            System.out.println("---");
+            Map<Boolean, LongSummaryStatistics> personGroupedByVipAndMagicNumberSumStats4 = personList.stream().collect(Collectors.groupingBy(Person::isVip, Collectors.summarizingLong(Person::getMagicNumber)));
+            System.out.println(personGroupedByVipAndMagicNumberSumStats4);
+
+            //grouping-classifier, mapfactory, downstream
+            LinkedHashMap<Integer, List<String>> namesLengthGroupedWithMapFactoryAndStrFiltering = namesList.stream().
+                    collect(Collectors.groupingBy(String::length, LinkedHashMap::new, Collectors.filtering(s -> s.contains("e"), Collectors.toList())));
+            System.out.println(namesLengthGroupedWithMapFactoryAndStrFiltering);
+
+
+            //partitioning
+            Map<Boolean, List<Person>> personPartitionedByHavingELetterInName = personList.stream().collect(Collectors.partitioningBy(p -> p.getName().contains("e")));
+            personPartitionedByHavingELetterInName.forEach((k, v) -> System.out.println(k + ":" + v));
+
+            // to set: for removing duplicates
+            Map<Boolean, Set<Person>> personSetPartitionedByHavingELetterInName = personList.stream().
+                    collect(Collectors.partitioningBy(p -> p.getName().contains("e"), Collectors.toSet()));
+            personSetPartitionedByHavingELetterInName.forEach((k, v) -> System.out.println(k + ":" + v));
 
 
     }
@@ -174,6 +275,14 @@ public class StreamTests {
         Stream<Integer> randomGeneratedStream = Stream.generate(() -> random.nextInt(5)).limit(10);
         randomGeneratedStream.forEach(System.out::print);
         System.out.println();
+
+        //reverse array
+        int[] array = {1, 2, 3, 4, 5};
+        int[] array_reversed = IntStream.range(0, array.length)
+                .map(i -> array[array.length - 1 - i])
+                .toArray();
+
+        Arrays.stream(array_reversed).forEach(System.out::print);
 
     }
 
