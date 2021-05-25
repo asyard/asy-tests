@@ -1,6 +1,6 @@
 /*package com.asy.test.j14;
 
-public class RecordTest {
+public class RecordTests {
 
     public static void main(String[] args) {
         Person person = new Person("pName", "pAddress");
@@ -22,4 +22,8 @@ public class RecordTest {
 
 }
 
-*/
+record Person(String name, String address) {
+
+}
+
+ */

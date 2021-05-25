@@ -1,4 +1,4 @@
-package com.asy.test.j10;
+package com.asy.test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class Java10Tests {
+public class VarKeywordTests {
     public static void main(String[] args) {
         testVar();
     }
@@ -28,7 +28,7 @@ public class Java10Tests {
 
         }
 
-        //var val; gives error
+        //var val; gives error if no value is assigned
         //var val = null; gives error
         var val = new Object();
         val = null;
@@ -37,6 +37,18 @@ public class Java10Tests {
         //var v1 = "test1", v2 = "test2"; 'var' is not allowed in a compound declaration
         //var arr = {3, 4, 5}; Array initializer is not allowed here
         int[] arr = {3, 4, 5};
+        var arr2 = new int[]{3, 4, 5};
+
+        var div1 = 23/2;
+        System.out.println(div1); //prints 11
+
+        var div2 = 23.0 / 2;
+        System.out.println(div2); //prints 11.5
+        System.out.println();
+
+        var param = "hello";
+        System.out.println(innerMethod(param));
+
 
 
         var ccls = new C();
@@ -70,6 +82,10 @@ public class Java10Tests {
         //Consumer<String> consumer6ErrVar = var s -> System.out.println(s);
 
     }
+
+    private static String innerMethod(String s) {
+        return s.toUpperCase();
+    }
 }
 
 /*var Clazz {
@@ -80,7 +96,7 @@ class B {
     //public var b1 = 5; cannot be used in fields of a class
 }
 
-class C extends B{
+class C extends B {
     /*void doSth(var v) {
         error
     }*/
