@@ -78,8 +78,8 @@ public class VarKeywordTests {
 
         Consumer<String> consumer5 = (final var s) -> System.out.println(s);
         Consumer<String> consumer6 = (var s) -> System.out.println(s);
-        //Consumer<String> consumer6Err = String s -> System.out.println(s);
-        //Consumer<String> consumer6ErrVar = var s -> System.out.println(s);
+        //Consumer<String> consumer6Err = String s -> System.out.println(s); //need () or s->
+        //Consumer<String> consumer6ErrVar = var s -> System.out.println(s); //need () if var is used.
 
     }
 
