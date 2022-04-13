@@ -1,27 +1,20 @@
 package com.asy.test.configclient.controller;
 
+import com.asy.test.configclient.ClientConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RefreshScope
 public class ClientController {
 
     @Autowired
-    private Environment environment;
-
-    @Value("${test.value}")
-    private String val;
-
+    private ClientConfiguration clientConfiguration;
 
     @GetMapping("/getit")
     public ResponseEntity<String> getResponse() {
-        return ResponseEntity.ok("Hello " + val);
+        return ResponseEntity.ok("Hello " + clientConfiguration.getValue());
     }
 
 }
