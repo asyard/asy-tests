@@ -28,10 +28,14 @@ Take note that config server's `application-{client.name}.properties` files have
 
 **Reload Client Application Properties**
 
-When a client configuration change occurs in server's config files, our spring beans in client application which have `@RefreshScope` annotation, can be reloaded with the help of spring boot actuator by calling the following endpoint (using **POST**):
+When a client configuration change occurs in server's config files, our spring beans in client application can be reloaded with the help of spring boot actuator by calling the following endpoint (using **POST**):
 
     http://clientip:port/actuator/refresh
 
+Actuator will trigger a rest call to retrieve config information by calling ConfigServicePropertySourceLocator.class provided by spring.
+
+2 types of beans can be refreshed : Beans which have attributes annotated with `@Value` and beans which are annotated with `@ConfigurationProperties`.
+Beans which have attributes annotated with `@Value` will only be refreshed if the class is annotated with `@RefreshScope`.
 
 We also have application.properties file in addition to bootstrap.properties file. Which is retrieved after bootstrap.properties file is loaded.
 
@@ -40,5 +44,7 @@ In this properties file, we have to set actuator endpoint available for calling 
 ```
 management.endpoints.web.exposure.include=*
 ```
+
+Keep in mind that spring.application.name property should be placed in bootstrap.properties file instead of application.properties file since triggered actuator refresh operation will look at this file for app name.
 
 

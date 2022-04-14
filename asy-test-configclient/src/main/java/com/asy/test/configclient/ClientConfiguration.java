@@ -6,14 +6,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 @Configuration
-//@RefreshScope
 @ConfigurationProperties(prefix = "test")
 public class ClientConfiguration {
 
     @Autowired
     private Environment environment; // alternative to @Value
 
-    //@Value("${value}")
     private String value;
 
     public String getValue() {
