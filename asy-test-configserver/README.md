@@ -5,7 +5,7 @@ After adding necessary libs, first we need to add :
 ```java
 @EnableConfigServer
 ```
-annotation to our main class. Then we need to determine config property location. In this example classpath is used insted of file system or git repo.
+annotation to our main class. Then we need to determine config property location. In this example file system is used.
 
 ```java
 spring.cloud.config.server.native.search-locations=...
