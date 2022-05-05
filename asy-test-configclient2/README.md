@@ -1,0 +1,1 @@
+Please refer to the [README file of other config client](https://github.com/asyard/asy-tests/blob/master/asy-test-configclient/README.md)

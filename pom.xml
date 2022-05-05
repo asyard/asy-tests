@@ -36,6 +36,7 @@
         <module>asy-test-rx</module>
         <module>asy-test-configserver</module>
         <module>asy-test-configclient</module>
+        <module>asy-test-configclient2</module>
     </modules>
 
 
