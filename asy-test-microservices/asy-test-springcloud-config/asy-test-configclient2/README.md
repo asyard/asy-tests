@@ -1,1 +1,1 @@
-Please refer to the [README file of other config client](https://github.com/asyard/asy-tests/blob/master/asy-test-configclient/README.md)
+Please refer to the [README file of other config client](https://github.com/asyard/asy-tests/blob/master/asy-test-microservices/asy-test-springcloud-config/asy-test-configclient/README.md)
