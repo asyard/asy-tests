@@ -34,9 +34,7 @@
         <module>asy-test-strutswebapp</module>
         <module>asy-test-zemberek</module>
         <module>asy-test-rx</module>
-        <module>asy-test-configserver</module>
-        <module>asy-test-configclient</module>
-        <module>asy-test-configclient2</module>
+        <module>asy-test-microservices</module>
     </modules>
 
 

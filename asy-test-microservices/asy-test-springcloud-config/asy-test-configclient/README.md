@@ -27,7 +27,7 @@ http://serverip:port/asy-config-server/{client.name}/{profile}
 ```
 
 
-**Reload Client Application Properties**
+**Reload Client Application Properties via Actuator**
 
 When a client configuration change occurs in server's config files, our spring beans in client application can be reloaded with the help of spring boot actuator by calling the following endpoint (using **POST**):
 
@@ -40,12 +40,48 @@ Beans which have attributes annotated with `@Value` will only be refreshed if th
 
 We also have application.properties file in addition to bootstrap.properties file. Which is retrieved after bootstrap.properties file is loaded.
 
-In this properties file, we have to set actuator endpoint available for calling since actuator endpoints are not exposed by default. In this example we used * to expose all actuator endpoints.
+In any of the properties file, we have to set actuator endpoint available for calling since actuator endpoints are not exposed by default. In this example we used * to expose all actuator endpoints.
 
 ```
 management.endpoints.web.exposure.include=*
 ```
 
 Keep in mind that spring.application.name property should be placed in bootstrap.properties file instead of application.properties file since triggered actuator refresh operation will look at this file for app name.
+
+
+**Reload Client Application Properties via Spring Cloud Bus**
+
+Instead of calling actuator /refresh endpoint, we can also use spring cloud bus to reload client application properties. This will be helpful when we have multiple clients needing to be refreshed.
+
+We used rabbitmq as a message broker in this example. Install docker image for rabbitmq and start it.
+We  used rabbitmq-management, so we can use it to check message queue from browser via http://localhost:15672/
+Default username is guest and password is guest.
+
+```
+docker pull rabbitmq:management
+
+docker run -d --name my-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:management
+```
+
+Add maven dependency for clients:
+
+```
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+</dependency>
+```
+
+In clients' application.properties file, we need to set the following properties:
+```
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=guest
+spring.rabbitmq.password=guest
+spring.cloud.bus.enabled=true
+spring.cloud.bus.refresh.enabled=true
+```
+
+
 
 
